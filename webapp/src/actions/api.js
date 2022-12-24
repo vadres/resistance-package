@@ -32,9 +32,11 @@ export const iniciarJogo = async (jogadores, tipoJogo) => {
     const { resistencia, espioes } = await placar();
     const { data } = await axios.post("jogo/iniciar", { jogadores, tipoJogo });
 
+    const jogador = data.pop();
+
     return {
         jogadores: data,
-        jogador: data[data.length - 1],
+        jogador,
         fase: 2,
         resistencia,
         espioes
@@ -72,20 +74,24 @@ export const atualizarPlacar = async (vencedor, gameState, setGameState) => {
 
 export const next = (gameState, setGameState) => {
     const jogadores = gameState.jogadores;
+    
+    if (jogadores.length == 0) {
+        setGameState({
+            ...gameState,
+            jogadores,
+            fase: 4   
+        })
+        return;
+    }
+
     const jogador = jogadores.pop()
 
-    const newState = {
+    setGameState({
         ...gameState,
         jogadores,
         jogador,
         fase: 2         
-    };
-
-    if (jogadores.length == 0) {
-        newState.fase = 4
-    }
-
-    setGameState(newState); 
+    }); 
 }
 
 export const result = async (gameState, setGameState) => {
