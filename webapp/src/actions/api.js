@@ -1,6 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "http://192.168.0.7:8080";
+axios.defaults.baseURL = "http://10.80.40.27:8080";
 
 export const buscarTodosJogadores = async () => {
     const { data } = await axios.get("/jogador/all");

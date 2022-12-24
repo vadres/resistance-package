@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  db:
+    image: 'postgres:latest'
+    container_name: db
+    environment:
+      POSTGRES_DB: resistance
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks: 
+      - db  
+    volumes:
+      - ~/dev/PostgreSQL:/var/lib/postgresql/data
+
+  # Backend Service 
+  api:
+    build:
+      context: api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - db
+    networks: 
+      - api
+      - webapp
+      - db
+    environment:  
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/resistance?useSSL=false
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres    
+  
+  # Frontend Service 
+  webapp:
+    build:
+      context: webapp
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_BASE_URL: http://127.0.0.1:8080/
+    ports:
+      - "3000:80" 
+    restart: always
+    depends_on:
+      - api
+    networks:
+      - webapp  
+networks:
+  api:
+  webapp:  
+  db:  
