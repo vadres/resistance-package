@@ -3,13 +3,14 @@ import { Header, Image, Button, Icon } from 'semantic-ui-react';
 import { useContext } from "react";
 import { GameContext } from "../context/game-context";
 
+import { Fase } from "../models/variables";
 import { next } from "../actions/api";
 
 const Info = () => { 
     const gameState = useContext(GameContext);   
     const { fase, jogador, setGameState } = gameState;
 
-    return (fase == 3)?
+    return (fase == Fase.INFO_ABERTA)?
         <div className="info">
             <Header as='h2'>{jogador.nome}</Header>
             <Image src={require(`../images/${jogador.personagem}.png`)} circular size='tiny' />

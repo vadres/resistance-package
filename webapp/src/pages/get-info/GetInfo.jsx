@@ -8,8 +8,7 @@ import Header from '../../components/header';
 
 function SeeFunctions() {
   return (
-    <>
-      <Header />
+    <>      
       <Container text>
         <Top />
         <Info />

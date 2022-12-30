@@ -4,12 +4,13 @@ import { useContext } from "react";
 import { GameContext } from "../context/game-context";
 
 import { verInformacoes } from "../actions/api";
+import { Fase } from "../models/variables";
 
 const Top = () => {
     const gameState = useContext(GameContext);
     const { jogador, fase, jogadores, setGameState } = gameState;
  
-    return (fase == 2)?
+    return (fase == Fase.INFO_FECHADA)?
         <div className="info">
             <Header as='h2'>{jogador.nome}</Header>
             <Button onClick={() => verInformacoes(gameState, setGameState)} color='twitter' icon labelPosition='right'>

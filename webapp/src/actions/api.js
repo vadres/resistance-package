@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Fase } from "../models/variables";
 
 axios.defaults.baseURL = "http://10.80.40.27:8080";
 
@@ -9,7 +10,7 @@ export const buscarTodosJogadores = async () => {
     const { resistencia, espioes } = await placar();
     let jogador;
 
-    if (fase == 2) {
+    if (fase == Fase.INFO_FECHADA) {
         jogador = jogadores.pop()
     }
 
@@ -37,7 +38,7 @@ export const iniciarJogo = async (jogadores, tipoJogo) => {
     return {
         jogadores: data,
         jogador,
-        fase: 2,
+        fase: Fase.INFO_FECHADA,
         resistencia,
         espioes
     };
@@ -46,7 +47,7 @@ export const iniciarJogo = async (jogadores, tipoJogo) => {
 export const verInformacoes = (gameState, setGameState) => {
     setGameState({
         ...gameState,
-        fase: 3
+        fase: Fase.INFO_ABERTA
     })
 };
 
@@ -79,7 +80,7 @@ export const next = (gameState, setGameState) => {
         setGameState({
             ...gameState,
             jogadores,
-            fase: 4   
+            fase: Fase.JOGO_INICIADO   
         })
         return;
     }
@@ -90,7 +91,7 @@ export const next = (gameState, setGameState) => {
         ...gameState,
         jogadores,
         jogador,
-        fase: 2         
+        fase: Fase.INFO_FECHADA        
     }); 
 }
 
@@ -101,19 +102,22 @@ export const result = async (gameState, setGameState) => {
     setGameState({
         ...gameState,
         jogadores,
-        fase: 5            
+        fase: Fase.RESULTADO            
     });          
     
 }
 
 export const resetarJogo = async (gameState, setGameState) => {
     await axios.post("jogo/resetar");
+    const { resistencia, espioes } = await placar();
     const { jogador, jogadores, fase } = await buscarTodosJogadores();
 
     setGameState({
         ...gameState,
         jogadores,
         jogador,
+        resistencia,
+        espioes,
         fase
     });
 }
