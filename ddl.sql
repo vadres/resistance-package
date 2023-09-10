@@ -80,7 +80,7 @@ CREATE TABLE public.partida_jogador (
 	CONSTRAINT partida_jogador_pkey PRIMARY KEY (id_jogador, id_partida),
 	CONSTRAINT fkbi9dsrougbxh00tc6fx14yemr FOREIGN KEY (id_partida) REFERENCES public.partida(id),
 	CONSTRAINT fki7ynwswuca98fgvckxtama0ac FOREIGN KEY (id_personagem) REFERENCES public.personagem(id),
-	CONSTRAINT fkkm2yxc5as3verfqi9f8x7410f FOREIGN KEY (id_jogador) REFERENCES public.jogador(id)
+	CONSTRAINT fkkm2yxc5as3verfqi9f8x7410f FOREIGN KEY (id_jogador) REFERENCES public.jogador(id) ON DELETE CASCADE
 );
 	
 INSERT INTO public.jogador (nome) VALUES

@@ -25,9 +25,19 @@ export const buscarTodosJogadores = async () => {
 
 export const novoJogador = async (nome) => {
     await axios.post("jogador/novo/" + nome);
-    return buscarTodosJogadores();
+    const { data } = await axios.get("/jogador/all");
+    const { jogadores } = data;
+
+    return jogadores;
 }
 
+export const removerJogador = async (id) => {
+    await axios.delete("jogador/" + id);
+    const { data } = await axios.get("/jogador/all");
+    const { jogadores } = data;
+
+    return jogadores;
+}
 
 export const iniciarJogo = async (jogadores, personagens, tipoJogo) => {
     const { resistencia, espioes } = await placar();

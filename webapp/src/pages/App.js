@@ -9,12 +9,17 @@ import SelectPlayers from './select-players/SelectPlayers';
 import SelectChar from './select-characters/SelectChar';
 import Header from '../components/header';
 import { Fase } from '../models/variables';
+import Players from './players/Players';
 
 function App() {
   const [ gameState, setGameState ] = useState(gameStateEmpty);
 
   const getPage = () => {
     const { fase } = gameState;
+
+    if (fase == Fase.GERENCIAR_JOGADORES) {
+      return <Players />
+    }
 
     if (fase == Fase.SEL_JOGADORES)
       return <SelectChar />

@@ -5,5 +5,5 @@ export const Fase = {
     INFO_ABERTA: 3,
     JOGO_INICIADO: 4,
     RESULTADO: 5,
-    ADD_JOGADOR: 6
+    GERENCIAR_JOGADORES: 6
 }

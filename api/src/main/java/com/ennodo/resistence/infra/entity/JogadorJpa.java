@@ -15,14 +15,8 @@ import javax.persistence.Table;
 @NoArgsConstructor
 public class JogadorJpa {
 	@Id
-	@GeneratedValue(
-			strategy = GenerationType.SEQUENCE,
-			generator = "jogador_seq"
-	)
-	@SequenceGenerator(
-			name = "jogador_seq",
-			allocationSize = 1
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false)
 	private Integer id;
 
 	@Column(name = "nome", nullable = false, length = 50)

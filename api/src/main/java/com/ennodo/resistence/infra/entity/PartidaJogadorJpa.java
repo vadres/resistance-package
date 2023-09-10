@@ -1,5 +1,6 @@
 package com.ennodo.resistence.infra.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

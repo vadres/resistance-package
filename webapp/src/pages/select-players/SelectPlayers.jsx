@@ -5,18 +5,20 @@ import { Divider, Form, Container, Button, Grid } from 'semantic-ui-react';
 import { GameContext } from '../../context/game-context';
 import { iniciarJogo, novoJogador } from '../../actions/api';
 import PlayerLabel from '../../components/player-label';
+import { gerenciarJogadores } from '../../actions/routes';
 
 function SelectPlayers() {
     const [selected, setSelected] = useState([]);
     const [ disableIniciar, setDisableIniciar ] = useState(true);
-    const jogadorNovoRef = useRef("");
     const tipoJogoRef = useRef(1);
 
     const gameState = useContext(GameContext);   
     const { jogadores, setGameState } = gameState;
 
-    const handleNovoJogador = async (event) => {
-        const state = await novoJogador(jogadorNovoRef.current.value);
+    const handleGerenciarJogadores = async (event) => {
+        const state = gerenciarJogadores();
+
+        //const state = await novoJogador(jogadorNovoRef.current.value);
 
         setGameState({
             ...gameState,
@@ -64,7 +66,7 @@ function SelectPlayers() {
 
             <Form>      
                 <Button disabled={disableIniciar} onClick={() => handleIniciarJogo()} positive>Iniciar Partida</Button>            
-                <Button onClick={() => handleNovoJogador()} color='teal'>Gerenciar jogadores</Button>
+                <Button onClick={() => handleGerenciarJogadores()} color='teal'>Gerenciar jogadores</Button>
             </Form>
 
             {/* <Form style={{ marginTop: 25 }}>
