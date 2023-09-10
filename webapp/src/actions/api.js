@@ -72,11 +72,14 @@ export const placar = async () => {
 export const atualizarPlacar = async (vencedor, gameState, setGameState) => {
     await axios.post("placar", { vencedor });
     await axios.post("jogo/finalizarPartida");
+    const { resistencia, espioes } = await placar();
 
     const { jogador, jogadores, fase } = await buscarTodosJogadores();
     setGameState({
         jogadores,
         jogador,
+        resistencia,
+        espioes,
         fase
     });
 }
