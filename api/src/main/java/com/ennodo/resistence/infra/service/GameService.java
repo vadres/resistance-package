@@ -96,7 +96,7 @@ public class GameService {
 		Collections.shuffle(todosJogadoresDTO.getPersonagens(), new Random());
 		Deque<PersonagemEnum> stack = new ArrayDeque<>(todosJogadoresDTO.getPersonagens());
 
-		while (!stack.isEmpty() && containsInitial(stack, partidaJogadoreJpas)) {
+		while (!stack.isEmpty() && temPersonagemExtra(stack, partidaJogadoreJpas)) {
 			PersonagemEnum personagemExtra = stack.peek();
 			for (PartidaJogadorJpa partidaJogadoreJpa : partidaJogadoreJpas) {
 				if (partidaJogadoreJpa.getPersonagem().getId().equals(1) || partidaJogadoreJpa.getPersonagem().getId().equals(7)) {
@@ -171,15 +171,12 @@ public class GameService {
 		grupoPartidaRepository.save(grupoPartidaJpa);
 	}
 
-	private boolean containsInitial(Deque<PersonagemEnum> stack, List<PartidaJogadorJpa> partidaJogadoreJpas) {
-		boolean espiao = partidaJogadoreJpas.stream()
-				.anyMatch(pjj -> pjj.getPersonagem().getId().equals(1) &&
-						stack.stream().anyMatch(p -> p.getTeam().equals(TeamEnum.E)));
+	private boolean temPersonagemExtra(Deque<PersonagemEnum> stack, List<PartidaJogadorJpa> partidaJogadoreJpas) {
+		boolean temEspiaoNaStack = stack.stream().anyMatch(p -> p.getTeam().equals(TeamEnum.E));
+		boolean temEspiaoNaLista = partidaJogadoreJpas.stream().anyMatch(pjj -> pjj.getPersonagem().getId().equals(1));
+		boolean temResNaStack = stack.stream().anyMatch(p -> p.getTeam().equals(TeamEnum.R));
+		boolean temResNaLista = partidaJogadoreJpas.stream().anyMatch(pjj -> pjj.getPersonagem().getId().equals(7));
 
-		boolean resistencia = partidaJogadoreJpas.stream()
-				.anyMatch(pjj -> pjj.getPersonagem().getId().equals(7) &&
-						stack.stream().anyMatch(p -> p.getTeam().equals(TeamEnum.R)));
-
-		return espiao && resistencia;
+		return (temEspiaoNaStack && temEspiaoNaLista) || (temResNaStack && temResNaLista);
 	}
 }
