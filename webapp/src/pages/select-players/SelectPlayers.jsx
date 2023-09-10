@@ -1,22 +1,12 @@
 import { useContext, useState, useRef } from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import { Divider, Form, Segment, Container, Button, Select, Grid, Ref } from 'semantic-ui-react';
+import { Divider, Form, Container, Button, Grid } from 'semantic-ui-react';
 
 import { GameContext } from '../../context/game-context';
 import { iniciarJogo, novoJogador } from '../../actions/api';
 import PlayerLabel from '../../components/player-label';
 
 function SelectPlayers() {
-    const personagens = [
-        'GUARDA_COSTAS',
-        'COMANDANTE',
-        'ASSASSINO',
-        'FALSO_COMANDANTE',
-        'RESISTENCIA',
-        'ESPIAO',
-        'AGENTE_INVISIVEL'
-    ]
-
     const [selected, setSelected] = useState([]);
     const [ disableIniciar, setDisableIniciar ] = useState(true);
     const jogadorNovoRef = useRef("");
@@ -70,8 +60,9 @@ function SelectPlayers() {
             }
             </Grid>
 
+            <Divider hidden />
+
             <Form>      
-                <br />      
                 <Button disabled={disableIniciar} onClick={() => handleIniciarJogo()} positive>Iniciar Partida</Button>            
                 <Button onClick={() => handleNovoJogador()} color='teal'>Gerenciar jogadores</Button>
             </Form>

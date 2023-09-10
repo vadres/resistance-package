@@ -1,6 +1,6 @@
 import { useContext, useState, useRef } from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import { Container, Button, Grid } from 'semantic-ui-react';
+import { Container, Button, Grid, Divider } from 'semantic-ui-react';
 
 import { GameContext } from '../../context/game-context';
 import CharLabel from '../../components/char-label';
@@ -55,7 +55,9 @@ function SelectChar() {
                     ))
                 }
             </Grid>
-            <br />
+            
+            <Divider hidden />
+
             <Button onClick={() => handleSelecionarChar()} positive>Selecionar</Button>            
         </Container>
     );

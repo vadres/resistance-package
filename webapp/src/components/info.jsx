@@ -5,6 +5,7 @@ import { GameContext } from "../context/game-context";
 
 import { Fase } from "../models/variables";
 import { next } from "../actions/api";
+import { upperFirst } from "../actions/string-util";
 
 const Info = () => { 
     const gameState = useContext(GameContext);   
@@ -14,7 +15,7 @@ const Info = () => {
         <div className="info">
             <Header as='h2'>{jogador.nome}</Header>
             <Image src={require(`../images/${jogador.personagem}.png`)} circular size='tiny' />
-            <Header color='orange' as='h3'>{jogador.personagem}</Header>      
+            <Header color='orange' as='h3'>{upperFirst(jogador.personagem)}</Header>      
             <Header as='h4'>{jogador.info}</Header>
             <Vistos atores={jogador.revelados} />
             <br />
