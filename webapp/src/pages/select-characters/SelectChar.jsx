@@ -47,16 +47,15 @@ function SelectChar() {
     return (
         <Container text style={{ display: "flex", flexDirection: "column"}}>
             <Grid columns={2}>
-            <Grid.Row>
                 {
                     personagens.map(personagem => (
-                        <Grid.Column key={personagem}>
+                        <Grid.Column computer={8} mobile={16} key={personagem}>
                             <CharLabel key={personagem} personagem={personagem} onClick={() => handleClickLabel(personagem)} />
                         </Grid.Column>
                     ))
                 }
-            </Grid.Row>
             </Grid>
+            <br />
             <Button onClick={() => handleSelecionarChar()} positive>Selecionar</Button>            
         </Container>
     );

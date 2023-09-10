@@ -20,7 +20,7 @@ function CharLabel({ personagem, onClick }) {
     }
 
     return (
-        <div style={{ margin: "10px 0" }}>
+        <div style={{ display: "flex", justifyContent: "center" }}>
             <Card onClick={() => resolve(onClick)}> 
                 <Card.Content>
                     <Card.Header>{upperFirst(personagem.replace("_", " "))}</Card.Header>
