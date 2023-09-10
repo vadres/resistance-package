@@ -161,14 +161,17 @@ public class GameService {
 
 	@Transactional
 	public void resetarJogo() {
-		PartidaJpa partidaJpa = partidaRepository.findPartidaAtual().orElseThrow();
-		GrupoPartidaJpa grupoPartidaJpa = grupoPartidaRepository.findByAtual(true).orElseThrow();
+		partidaRepository.findPartidaAtual()
+		.ifPresent(partidaJpa -> {
+			partidaJpa.setAtual(false);
+			partidaRepository.save(partidaJpa);
+		});
 
-		partidaJpa.setAtual(false);
-		grupoPartidaJpa.setAtual(false);
-
-		partidaRepository.save(partidaJpa);
-		grupoPartidaRepository.save(grupoPartidaJpa);
+		grupoPartidaRepository.findByAtual(true)
+		.ifPresent(grupoPartidaJpa -> {
+			grupoPartidaJpa.setAtual(false);
+			grupoPartidaRepository.save(grupoPartidaJpa);
+		});
 	}
 
 	private boolean temPersonagemExtra(Deque<PersonagemEnum> stack, List<PartidaJogadorJpa> partidaJogadoreJpas) {
