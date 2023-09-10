@@ -1,17 +1,18 @@
 package com.ennodo.resistence.infra.service;
 
+import com.ennodo.resistence.domain.PersonagemEnum;
+import com.ennodo.resistence.domain.TeamEnum;
 import com.ennodo.resistence.infra.dto.GameResponseDTO;
 import com.ennodo.resistence.infra.dto.JogadorDTO;
+import com.ennodo.resistence.infra.dto.TodosJogadoresDTO;
 import com.ennodo.resistence.infra.entity.GrupoPartidaJpa;
 import com.ennodo.resistence.infra.entity.JogadorJpa;
 import com.ennodo.resistence.infra.entity.JogoJpa;
-import com.ennodo.resistence.infra.entity.JogoPersonagemJpa;
 import com.ennodo.resistence.infra.entity.PartidaJogadorIdJpa;
 import com.ennodo.resistence.infra.entity.PartidaJogadorJpa;
 import com.ennodo.resistence.infra.entity.PartidaJpa;
+import com.ennodo.resistence.infra.entity.PersonagemJpa;
 import com.ennodo.resistence.infra.repository.GrupoPartidaRepository;
-import com.ennodo.resistence.infra.repository.JogadorRepository;
-import com.ennodo.resistence.infra.repository.JogoPersonagemRepository;
 import com.ennodo.resistence.infra.repository.JogoRepository;
 import com.ennodo.resistence.infra.repository.PartidaJogadorRepository;
 import com.ennodo.resistence.infra.repository.PartidaRepository;
@@ -20,8 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 import java.util.Random;
 
@@ -29,18 +32,17 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class GameService {
 	private final GrupoPartidaRepository grupoPartidaRepository;
-	private final JogadorRepository jogadorRepository;
+	private final JogadorService jogadorService;
 	private final JogoRepository jogoRepository;
 	private final PartidaJogadorRepository partidaJogadorRepository;
 	private final PartidaRepository partidaRepository;
-	private final JogoPersonagemRepository jogoPersonagemRepository;
 	private final PersonagemRepository personagemRepository;
 
 	public GameResponseDTO buscarJogadores() {
 		List<PartidaJogadorJpa> partidaJogadoreJpas = partidaJogadorRepository.buscarJogadoresJogoAtual();
 
 		if (partidaJogadoreJpas == null || partidaJogadoreJpas.isEmpty()) {
-			List<JogadorJpa> jogadores = jogadorRepository.findAll();
+			List<JogadorJpa> jogadores = jogadorService.buscarTodos();
 			return new GameResponseDTO(
 					jogadores.stream().map(JogadorDTO::toDTO).toList(),
 					GameResponseDTO.Fase.JOGO_NOVO.getValor()
@@ -61,18 +63,54 @@ public class GameService {
 	}
 
 	@Transactional
-	public List<JogadorDTO> iniciarJogo(List<JogadorDTO> jogadoresDTO, Integer tipoJogo) {
-		List<JogadorJpa> jogadores = jogadorRepository.buscarPorIds(
-			jogadoresDTO.stream().map(JogadorDTO::getId).toList()
-		);
-
-		Collections.shuffle(jogadores, new Random());
+	public List<JogadorDTO> iniciarJogo(TodosJogadoresDTO todosJogadoresDTO) {
+		List<JogadorJpa> jogadores = jogadorService.localizarJogadores(todosJogadoresDTO.getJogadores());
 
 		JogoJpa jogoJpa = jogoRepository.findByQtdJogadores(jogadores.size());
 
-		List<JogoPersonagemJpa> jogoPersonagems = jogoPersonagemRepository
-				.buscarPersonagens(jogoJpa.getId(), tipoJogo);
-		Collections.shuffle(jogoPersonagems, new Random());
+		final List<PartidaJogadorJpa> partidaJogadoreJpas = new ArrayList<>();
+		List<PersonagemJpa> personagens = personagemRepository.findAll();
+		Collections.shuffle(personagens, new Random());
+
+		PersonagemJpa resistencia = personagens.stream().filter(p -> p.getId().equals(7))
+				.findFirst().orElseThrow();
+
+		for (int i = 0; i < jogoJpa.getQtdResistencia(); i++) {
+			PartidaJogadorJpa partidaJogadorJpa = new PartidaJogadorJpa();
+			partidaJogadorJpa.setPersonagem(resistencia);
+
+			partidaJogadoreJpas.add(partidaJogadorJpa);
+		}
+
+		PersonagemJpa espiao = personagens.stream().filter(p -> p.getId().equals(1))
+				.findFirst().orElseThrow();
+
+		for (int i = 0; i < jogoJpa.getQtdEspioes(); i++) {
+			PartidaJogadorJpa partidaJogadorJpa = new PartidaJogadorJpa();
+			partidaJogadorJpa.setPersonagem(espiao);
+
+			partidaJogadoreJpas.add(partidaJogadorJpa);
+		}
+
+		Collections.shuffle(partidaJogadoreJpas);
+		Collections.shuffle(todosJogadoresDTO.getPersonagens(), new Random());
+		Deque<PersonagemEnum> stack = new ArrayDeque<>(todosJogadoresDTO.getPersonagens());
+
+		while (!stack.isEmpty() && containsInitial(stack, partidaJogadoreJpas)) {
+			PersonagemEnum personagemExtra = stack.peek();
+			for (PartidaJogadorJpa partidaJogadoreJpa : partidaJogadoreJpas) {
+				if (partidaJogadoreJpa.getPersonagem().getId().equals(1) || partidaJogadoreJpa.getPersonagem().getId().equals(7)) {
+					if (partidaJogadoreJpa.getPersonagem().getTeam().equals(personagemExtra.getTeam())) {
+						PersonagemJpa personagemExtraJpa = personagens.stream().filter(p -> p.getDescricao().equals(personagemExtra.name()))
+								.findFirst().orElseThrow();
+
+						partidaJogadoreJpa.setPersonagem(personagemExtraJpa);
+						stack.pop();
+						break;
+					}
+				}
+			}
+		}
 
 		GrupoPartidaJpa grupoPartida = grupoPartidaRepository.findByAtual(true)
 						.orElse(new GrupoPartidaJpa(true));
@@ -86,21 +124,15 @@ public class GameService {
 		partidaJpa = partidaRepository.save(partidaJpa);
 		partidaRepository.atualizarPartidasAnteriores(partidaJpa.getId());
 
-		final List<PartidaJogadorJpa> partidaJogadoreJpas = new ArrayList<>();
 		int i = 0;
 		for (JogadorJpa jogadorJpa : jogadores) {
-			JogoPersonagemJpa jogoPersonagem = jogoPersonagems.get(i);
-			if (jogoPersonagem.getQtdPersonagem() == 1) i++;
-			else jogoPersonagem.setQtdPersonagem( jogoPersonagem.getQtdPersonagem() - 1);
-
 			PartidaJogadorIdJpa partidaJogadorIdJpa = new PartidaJogadorIdJpa(jogadorJpa.getId(), partidaJpa.getId());
-			PartidaJogadorJpa partidaJogadorJpa = new PartidaJogadorJpa();
+			PartidaJogadorJpa partidaJogadorJpa = partidaJogadoreJpas.get(i);
 			partidaJogadorJpa.setId(partidaJogadorIdJpa);
 			partidaJogadorJpa.setPartida(partidaJpa);
-			partidaJogadorJpa.setPersonagem(jogoPersonagem.getPersonagem());
 			partidaJogadorJpa.setJogador(jogadorJpa);
 
-			partidaJogadoreJpas.add(partidaJogadorRepository.save(partidaJogadorJpa));
+			partidaJogadoreJpas.set(i++, partidaJogadorRepository.save(partidaJogadorJpa));
 		}
 
 		return partidaJogadoreJpas.stream().map(partidaJogadorJpa -> (
@@ -137,5 +169,17 @@ public class GameService {
 
 		partidaRepository.save(partidaJpa);
 		grupoPartidaRepository.save(grupoPartidaJpa);
+	}
+
+	private boolean containsInitial(Deque<PersonagemEnum> stack, List<PartidaJogadorJpa> partidaJogadoreJpas) {
+		boolean espiao = partidaJogadoreJpas.stream()
+				.anyMatch(pjj -> pjj.getPersonagem().getId().equals(1) &&
+						stack.stream().anyMatch(p -> p.getTeam().equals(TeamEnum.E)));
+
+		boolean resistencia = partidaJogadoreJpas.stream()
+				.anyMatch(pjj -> pjj.getPersonagem().getId().equals(7) &&
+						stack.stream().anyMatch(p -> p.getTeam().equals(TeamEnum.R)));
+
+		return espiao && resistencia;
 	}
 }

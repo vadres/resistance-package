@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Fase } from "../models/variables";
 
-axios.defaults.baseURL = "http://10.80.40.27:8080";
+axios.defaults.baseURL = "http://10.80.40.22:8080";
 
 export const buscarTodosJogadores = async () => {
     const { data } = await axios.get("/jogador/all");
@@ -29,9 +29,9 @@ export const novoJogador = async (nome) => {
 }
 
 
-export const iniciarJogo = async (jogadores, tipoJogo) => {
+export const iniciarJogo = async (jogadores, personagens, tipoJogo) => {
     const { resistencia, espioes } = await placar();
-    const { data } = await axios.post("jogo/iniciar", { jogadores, tipoJogo });
+    const { data } = await axios.post("jogo/iniciar", { jogadores, personagens, tipoJogo });
 
     const jogador = data.pop();
 
@@ -43,6 +43,14 @@ export const iniciarJogo = async (jogadores, tipoJogo) => {
         espioes
     };
 }
+
+export const selecionarChars = async (characters) => {
+    return {
+        characters,
+        fase: Fase.PRE_JOGO,
+    };
+}
+
 
 export const verInformacoes = (gameState, setGameState) => {
     setGameState({

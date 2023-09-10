@@ -1,5 +1,7 @@
 package com.ennodo.resistence.infra.entity;
 
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -7,6 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "jogo")
+@Data
 public class JogoJpa {
 	@Id
 	@Column(name = "id", nullable = false)
@@ -15,20 +18,9 @@ public class JogoJpa {
 	@Column(name = "qtd_jogadores", nullable = false)
 	private Integer qtdJogadores;
 
-	public Integer getId() {
-		return id;
-	}
+	@Column(name = "qtd_resistencia", nullable = false)
+	private Integer qtdResistencia;
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public Integer getQtdJogadores() {
-		return qtdJogadores;
-	}
-
-	public void setQtdJogadores(Integer qtdJogadores) {
-		this.qtdJogadores = qtdJogadores;
-	}
-
+	@Column(name = "qtd_espioes", nullable = false)
+	private Integer qtdEspioes;
 }

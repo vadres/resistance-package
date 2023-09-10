@@ -5,15 +5,18 @@ import { Divider, Form, Segment, Container, Button, Select, Grid, Ref } from 'se
 import { GameContext } from '../../context/game-context';
 import { iniciarJogo, novoJogador } from '../../actions/api';
 import PlayerLabel from '../../components/player-label';
+import CharLabel from '../../components/char-label';
 
 
 function SelectPlayers() {
-    const tipos = [
-        { key: '1', text: 'Simples', value: '1' },
-        { key: '2', text: 'Com comandante', value: '2' },
-        { key: '3', text: 'Com falso comandante', value: '3' },
-        { key: '4', text: 'Com falso comandante e assassino', value: '4' },
-        { key: '5', text: 'Com falso comandante e agente invisível', value: '5' }
+    const personagens = [
+        'GUARDA_COSTAS',
+        'COMANDANTE',
+        'ASSASSINO',
+        'FALSO_COMANDANTE',
+        'RESISTENCIA',
+        'ESPIAO',
+        'AGENTE_INVISIVEL'
     ]
 
     const [selected, setSelected] = useState([]);
@@ -33,7 +36,8 @@ function SelectPlayers() {
     }
 
     const handleIniciarJogo = async () => {
-        const infoJogo = await iniciarJogo(selected, tipoJogoRef.current.value);
+        const { characters } = gameState
+        const infoJogo = await iniciarJogo(selected, characters, tipoJogoRef.current.value);
 
         setGameState({
             ...gameState,
@@ -56,17 +60,7 @@ function SelectPlayers() {
     
     const getPage = (jogadores) => {
         return jogadores && jogadores.length >= 5? 
-        <Form>
-            <Form.Field>
-                <label>Tipo de Jogo</label>
-                <select ref={tipoJogoRef} className="ui fluid search dropdown">
-                    <option value={1}>Simples</option>
-                    <option value={2}>Com comandante</option>
-                    <option value={3}>Com falso comandante</option>
-                    <option value={4}>Com falso comandante e assassino</option>
-                    <option value={5}>Com falso comandante e agente invisível</option>
-                </select>
-            </Form.Field>
+        <Form>            
             <Button disabled={selected.length < 5} onClick={() => handleIniciarJogo()} positive>Iniciar Partida</Button>            
         </Form>
         : 
@@ -78,11 +72,6 @@ function SelectPlayers() {
                         
     return (
         <Container text style={{ display: "flex", flexDirection: "column"}}>
-            
-            {
-                getPage(jogadores)
-            }
-
             <Grid columns={4}>
             {
                 jogadores.map(jogador => (
@@ -93,8 +82,11 @@ function SelectPlayers() {
             }
             </Grid>
 
+            {
+                getPage(jogadores)
+            }
 
-            <Form>
+            <Form style={{ marginTop: 25 }}>
                 <Divider />
                 <Form.Field>
                     <label>Adicionar Jogador</label>

@@ -7,16 +7,19 @@ import java.util.Arrays;
 
 @AllArgsConstructor
 public enum PersonagemEnum {
-	GUARDA_COSTAS("Comandantes"),
-	COMANDANTE("Espiões"),
-	ASSASSINO("Espiões"),
-	FALSO_COMANDANTE("Espiões"),
-	RESISTENCIA(""),
-	ESPIAO("Espiões"),
-	AGENTE_INVISIVEL("Espiões");
+	GUARDA_COSTAS("Comandantes", TeamEnum.R),
+	COMANDANTE("Espiões", TeamEnum.R),
+	ASSASSINO("Espiões", TeamEnum.E),
+	FALSO_COMANDANTE("Espiões", TeamEnum.E),
+	RESISTENCIA("", TeamEnum.R),
+	ESPIAO("Espiões", TeamEnum.E),
+	AGENTE_INVISIVEL("Espiões", TeamEnum.E);
 
 	@Getter
 	private final String observer;
+
+	@Getter
+	private final TeamEnum team;
 
 	public static boolean acharEspiao(Jogador jogador) {
 		return ESPIAO.equals(jogador.personagemEnum) ||

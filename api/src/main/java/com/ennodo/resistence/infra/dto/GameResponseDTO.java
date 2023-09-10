@@ -14,7 +14,7 @@ public class GameResponseDTO {
 	@AllArgsConstructor
 	@Getter
 	public enum Fase {
-		JOGO_NOVO(1),
+		JOGO_NOVO(0),
 		JOGO_JA_INICIADO(2);
 
 		private final Integer valor;
