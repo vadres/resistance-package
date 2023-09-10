@@ -21,6 +21,7 @@ function SelectChar() {
     const { setGameState } = gameState;   
 
     const handleSelecionarChar = async () => {
+        console.log(selected)
         const infoJogo = await selecionarChars(selected);
 
         setGameState({
@@ -33,18 +34,20 @@ function SelectChar() {
         const index = selected.indexOf(player);
 
         if (index > -1) {
-            selected.slice(index, 1);
+            selected.splice(index, 1);
             setSelected(selected);
-            return "teal";
         } else {
             setSelected([...selected, player]);
-            return "olive";
         }
+        
+        return "olive";
+        
     }
     
     return (
         <Container text style={{ display: "flex", flexDirection: "column"}}>
             <Grid columns={2}>
+            <Grid.Row>
                 {
                     personagens.map(personagem => (
                         <Grid.Column key={personagem}>
@@ -52,6 +55,7 @@ function SelectChar() {
                         </Grid.Column>
                     ))
                 }
+            </Grid.Row>
             </Grid>
             <Button onClick={() => handleSelecionarChar()} positive>Selecionar</Button>            
         </Container>
