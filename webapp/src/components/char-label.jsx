@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import { Label, Image, Button, Checkbox, Card, Icon } from 'semantic-ui-react';
+import { Image, Checkbox, Card } from 'semantic-ui-react';
 
 function upperFirst(sentence) {
     const fn = (word) => {
@@ -13,15 +13,22 @@ function upperFirst(sentence) {
 
 function CharLabel({ personagem, onClick }) {
     const [ checked, setChecked ] = useState(false);
+    const [ color, setColor ] = useState("");
 
     const resolve = (onClick) => {
         onClick();
         setChecked(!checked);
+
+        if (!checked) {
+            setColor("green");
+        } else {
+            setColor("");
+        }
     }
 
     return (
         <div style={{ display: "flex", justifyContent: "center" }}>
-            <Card onClick={() => resolve(onClick)}> 
+            <Card color={color} onClick={() => resolve(onClick)}> 
                 <Card.Content>
                     <Card.Header>{upperFirst(personagem.replace("_", " "))}</Card.Header>
                     <Card.Description>

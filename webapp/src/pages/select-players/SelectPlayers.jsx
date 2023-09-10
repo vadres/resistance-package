@@ -5,8 +5,6 @@ import { Divider, Form, Segment, Container, Button, Select, Grid, Ref } from 'se
 import { GameContext } from '../../context/game-context';
 import { iniciarJogo, novoJogador } from '../../actions/api';
 import PlayerLabel from '../../components/player-label';
-import CharLabel from '../../components/char-label';
-
 
 function SelectPlayers() {
     const personagens = [
@@ -20,6 +18,7 @@ function SelectPlayers() {
     ]
 
     const [selected, setSelected] = useState([]);
+    const [ disableIniciar, setDisableIniciar ] = useState(true);
     const jogadorNovoRef = useRef("");
     const tipoJogoRef = useRef(1);
 
@@ -49,30 +48,19 @@ function SelectPlayers() {
         const index = selected.indexOf(player);
 
         if (index > -1) {
-            selected.slice(index, 1);
+            selected.splice(index, 1);
             setSelected(selected);
-            return "teal";
         } else {
-            setSelected([...selected, player]);
-            return "olive";
+            selected.push(player);
+            setSelected(selected);
         }
+
+        setDisableIniciar(selected.length < 5);
     }
-    
-    const getPage = (jogadores) => {
-        return jogadores && jogadores.length >= 5? 
-        <Form>            
-            <Button disabled={selected.length < 5} onClick={() => handleIniciarJogo()} positive>Iniciar Partida</Button>            
-        </Form>
-        : 
-        <>
-           <Segment>Jogadores insuficientes para jogar!</Segment>
-           <Divider />
-        </>
-   }
                         
     return (
         <Container text style={{ display: "flex", flexDirection: "column"}}>
-            <Grid columns={4}>
+            <Grid columns={2}>
             {
                 jogadores.map(jogador => (
                     <Grid.Column key={jogador.id}>
@@ -82,18 +70,20 @@ function SelectPlayers() {
             }
             </Grid>
 
-            {
-                getPage(jogadores)
-            }
+            <Form>      
+                <br />      
+                <Button disabled={disableIniciar} onClick={() => handleIniciarJogo()} positive>Iniciar Partida</Button>            
+                <Button onClick={() => handleNovoJogador()} color='teal'>Gerenciar jogadores</Button>
+            </Form>
 
-            <Form style={{ marginTop: 25 }}>
+            {/* <Form style={{ marginTop: 25 }}>
                 <Divider />
                 <Form.Field>
                     <label>Adicionar Jogador</label>
                     <input ref={jogadorNovoRef} placeholder='Nome' />
                 </Form.Field>
                 <Button onClick={() => handleNovoJogador()} positive>Salvar</Button>
-            </Form>
+            </Form> */}
 
         </Container>
     );
